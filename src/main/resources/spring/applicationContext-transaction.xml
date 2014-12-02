@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd"
+	default-lazy-init="true">
+
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+		abstract="false">
+		<property name="dataSource" ref="mysql1dataSource" />
+	</bean>
+
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="insert*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />
+			<tx:method name="add*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="delete*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />
+			<tx:method name="update*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />
+			<tx:method name="save*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />			
+		</tx:attributes>
+	</tx:advice>
+
+	<bean id="dbSourceAspectBean" class="com.qianqian.cms.util.DBSourceAspect" />
+
+	
+	<!-- 修改广告位上广告状态展示事务配置开始 -->
+	 <aop:config proxy-target-class="true">
+		<aop:pointcut id="txPointcut"
+			expression="execution(* com.qianqian.cms.service.impl.MapAdLocationServiceImpl.updateMapState(..))" />
+
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut"
+			order="100" />
+		<aop:aspect id="dbSourceAspect" ref="dbSourceAspectBean"
+			order="99">
+			<aop:before method="doBefore" pointcut-ref="txPointcut" />
+			<aop:after method="doAfter" pointcut-ref="txPointcut" />
+			<aop:after-throwing pointcut-ref="txPointcut"
+				method="doThrowing" throwing="ex" />
+		</aop:aspect>
+	</aop:config> 
+	<!-- 修改广告位上广告状态事务配置结束 -->
+
+	<!-- <aop:config > 配置有那些类中的方法拥有事务的传播性 <aop:pointcut id="txPointcut" expression="execution(* 
+		com.qianqian.user.service..*.*(..))" /> 事务AOP <aop:advisor advice-ref="txAdvice" 
+		pointcut-ref="txPointcut" order="100"/> 开启事务之前切换数据源到主库上 <aop:aspect id="dbSourceAspect" 
+		ref="dbSourceAspectBean" order="99"> <aop:before method="doBefore" pointcut-ref="txPointcut"/> 
+		<aop:after method="doAfter" pointcut-ref="txPointcut"/> <aop:after-throwing 
+		pointcut-ref="txPointcut" method="doThrowing" throwing="ex" /> </aop:aspect> 
+		</aop:config> -->
+
+</beans>

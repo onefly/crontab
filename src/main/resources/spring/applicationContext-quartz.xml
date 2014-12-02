@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<bean id="mapAdLocationService" class="com.qianqian.cms.service.impl.MapAdLocationServiceImpl" scope="prototype"/>
+	
+	<!-- 定时任务调度器配置文件 -->
+	<!-- 定时任务调度器工厂类 -->
+	<bean id="schedulerFactory" class="org.quartz.impl.StdSchedulerFactory"/>
+	<!-- 修改广告位与广告映射展示状态调度器 -->
+	<bean id="mapAdScheduler" factory-bean="schedulerFactory"
+		factory-method="getScheduler" lazy-init="false" scope="singleton"
+		init-method="start" destroy-method="shutdown"/>		
+		
+</beans>

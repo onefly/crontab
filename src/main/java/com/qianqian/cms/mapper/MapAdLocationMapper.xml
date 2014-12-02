@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qianqian.cms.mapper.MapAdLocationMapper">
+	<update id="updateByLocationId" parameterType="com.qianqian.cms.model.MapAdLocationEntity">
+		update
+		cms_map_ad_location set show_state = 0 where location_id =
+		#{locationId} and show_state = 1
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.qianqian.cms.model.MapAdLocationEntity">
+		update
+		cms_map_ad_location set show_state = 1 where id = #{id}
+	</update>
+
+</mapper>
